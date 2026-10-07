@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Cadastro</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0D5E6B}a:hover{color:#08434D}
+input::placeholder{color:#7A898D}
+input[type=checkbox]{accent-color:#0D5E6B}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #FFFFFF; font-family: Manrope, system-ui, sans-serif; color: #15282D; overflow: hidden">
+  <div style="display: flex; align-items: center; padding: 52px 12px 8px">
+    <a href="Main.dc.html" aria-label="Voltar" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #15282D"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
+    <div style="flex: 1; text-align: center; font-size: 17px; font-weight: 700">Criar conta</div>
+    <div style="width: 44px"></div>
+  </div>
+  <div style="flex: 1; display: flex; flex-direction: column; padding: 12px 24px 32px; gap: 14px">
+    <p style="margin: 0 0 4px; font-size: 14px; line-height: 1.5; color: #4E6166">Seus dados ficam protegidos e só são usados para dar retorno sobre suas reclamações.</p>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="cd-nome" style="font-size: 14px; font-weight: 700">Nome completo</label>
+      <input id="cd-nome" type="text" placeholder="Como no seu documento" style="height: 50px; border-radius: 14px; border: 1.5px solid #D5DEE0; padding: 0 16px; font: 500 15px Manrope, system-ui, sans-serif; color: #15282D; outline: none">
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="cd-cpf" style="font-size: 14px; font-weight: 700">CPF</label>
+      <input id="cd-cpf" type="text" inputmode="numeric" placeholder="000.000.000-00" style="height: 50px; border-radius: 14px; border: 1.5px solid #D5DEE0; padding: 0 16px; font: 500 15px Manrope, system-ui, sans-serif; color: #15282D; outline: none">
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="cd-email" style="font-size: 14px; font-weight: 700">E-mail</label>
+      <input id="cd-email" type="email" placeholder="voce@email.com" style="height: 50px; border-radius: 14px; border: 1.5px solid #D5DEE0; padding: 0 16px; font: 500 15px Manrope, system-ui, sans-serif; color: #15282D; outline: none">
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="cd-tel" style="font-size: 14px; font-weight: 700">Celular</label>
+      <input id="cd-tel" type="tel" placeholder="(00) 00000-0000" style="height: 50px; border-radius: 14px; border: 1.5px solid #D5DEE0; padding: 0 16px; font: 500 15px Manrope, system-ui, sans-serif; color: #15282D; outline: none">
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="cd-senha" style="font-size: 14px; font-weight: 700">Senha</label>
+      <input id="cd-senha" type="password" placeholder="Mínimo de 8 caracteres" style="height: 50px; border-radius: 14px; border: 1.5px solid #D5DEE0; padding: 0 16px; font: 500 15px Manrope, system-ui, sans-serif; color: #15282D; outline: none">
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 4px">
+        <div style="height: 4px; border-radius: 2px; background: #0D5E6B"></div>
+        <div style="height: 4px; border-radius: 2px; background: #0D5E6B"></div>
+        <div style="height: 4px; border-radius: 2px; background: #D5DEE0"></div>
+        <div style="height: 4px; border-radius: 2px; background: #D5DEE0"></div>
+      </div>
+      <div style="font-size: 12px; color: #4E6166">Força da senha: média</div>
+    </div>
+    <label style="display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.45; color: #3A4E53; margin-top: 2px">
+      <input type="checkbox" checked style="width: 20px; height: 20px; margin: 0; flex: none">
+      <span>Li e aceito os <a href="#" style="font-weight: 700; text-decoration: none">Termos de Uso</a> e a <a href="#" style="font-weight: 700; text-decoration: none">Política de Privacidade</a>.</span>
+    </label>
+    <div style="flex: 1"></div>
+    <a href="Home.dc.html" style="display: flex; align-items: center; justify-content: center; height: 54px; border-radius: 14px; background: #0D5E6B; color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none">Criar minha conta</a>
+    <p style="margin: 0; text-align: center; font-size: 14px; color: #4E6166">Já tem conta? <a href="Login.dc.html" style="font-weight: 700; text-decoration: none">Entrar</a></p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

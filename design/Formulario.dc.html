@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Formulário da reclamação</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0D5E6B}a:hover{color:#08434D}
+input::placeholder,textarea::placeholder{color:#7A898D}
+input.sw{appearance:none;-webkit-appearance:none;width:48px;height:28px;border-radius:14px;background:#C9D3D6;position:relative;margin:0;cursor:pointer;flex:none}
+input.sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#FFFFFF;transition:left .15s}
+input.sw:checked{background:#0D5E6B}
+input.sw:checked::after{left:23px}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #F4F6F7; font-family: Manrope, system-ui, sans-serif; color: #15282D; overflow: hidden">
+  <div style="display: flex; flex-direction: column; gap: 10px; padding: 52px 20px 16px; background: #FFFFFF; border-bottom: 1px solid #E1E7E9">
+    <div style="display: flex; align-items: center; margin: 0 -8px">
+      <a href="Categorias.dc.html" aria-label="Voltar" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; color: #0D5E6B"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
+      <div style="flex: 1; text-align: center; font-size: 17px; font-weight: 700">Nova reclamação · Obra</div>
+      <div style="width: 44px"></div>
+    </div>
+    <div style="font-size: 13px; font-weight: 600; color: #4E6166">Passo 2 de 5: Detalhes</div>
+    <div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px">
+      <div style="height: 6px; border-radius: 3px; background: #0D5E6B"></div>
+      <div style="height: 6px; border-radius: 3px; background: #0D5E6B"></div>
+      <div style="height: 6px; border-radius: 3px; background: #D5DEE0"></div>
+      <div style="height: 6px; border-radius: 3px; background: #D5DEE0"></div>
+      <div style="height: 6px; border-radius: 3px; background: #D5DEE0"></div>
+    </div>
+  </div>
+  <div style="flex: 1; display: flex; flex-direction: column; gap: 16px; padding: 18px 20px">
+    <div style="display: flex; align-items: center; gap: 8px; align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: #DFF0F1; color: #0D5E6B; font-size: 13px; font-weight: 700">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>
+      Ruído fora do horário
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="fm-desc" style="font-size: 14px; font-weight: 700">Descreva o problema</label>
+      <textarea id="fm-desc" rows="4" style="box-sizing: border-box; border-radius: 14px; border: 1.5px solid #D5DEE0; padding: 12px 14px; font: 500 14px/1.5 Manrope, system-ui, sans-serif; color: #15282D; resize: none; outline: none; background: #FFFFFF">Obra vizinha usando britadeira às 22:30. Barulho intenso há mais de 3 dias seguidos.</textarea>
+      <div style="font-size: 12px; color: #5B6B70; text-align: right">86/500</div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="fm-data" style="font-size: 14px; font-weight: 700">Data</label>
+        <input id="fm-data" type="text" value="05/10/2026" style="height: 48px; border-radius: 14px; border: 1.5px solid #D5DEE0; padding: 0 14px; font: 500 14px Manrope, system-ui, sans-serif; color: #15282D; outline: none; background: #FFFFFF; min-width: 0">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="fm-hora" style="font-size: 14px; font-weight: 700">Horário</label>
+        <input id="fm-hora" type="text" value="22:30" style="height: 48px; border-radius: 14px; border: 1.5px solid #D5DEE0; padding: 0 14px; font: 500 14px Manrope, system-ui, sans-serif; color: #15282D; outline: none; background: #FFFFFF; min-width: 0">
+      </div>
+    </div>
+    <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+      <legend style="font-size: 14px; font-weight: 700; padding: 0; margin-bottom: 8px">Com que frequência acontece?</legend>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <button type="button" aria-pressed="false" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #D5DEE0; background: #FFFFFF; color: #3A4E53; font: 600 13px Manrope, system-ui, sans-serif; cursor: pointer">Primeira vez</button>
+        <button type="button" aria-pressed="true" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #0D5E6B; background: #0D5E6B; color: #FFFFFF; font: 700 13px Manrope, system-ui, sans-serif; cursor: pointer">Alguns dias</button>
+        <button type="button" aria-pressed="false" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #D5DEE0; background: #FFFFFF; color: #3A4E53; font: 600 13px Manrope, system-ui, sans-serif; cursor: pointer">Todo dia</button>
+      </div>
+    </fieldset>
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <label for="fm-obra" style="font-size: 14px; font-weight: 700">Responsável pela obra <span style="font-weight: 500; color: #5B6B70">(opcional)</span></label>
+      <input id="fm-obra" type="text" placeholder="Nome da construtora ou nº do alvará" style="height: 48px; border-radius: 14px; border: 1.5px solid #D5DEE0; padding: 0 14px; font: 500 14px Manrope, system-ui, sans-serif; color: #15282D; outline: none; background: #FFFFFF">
+    </div>
+    <label style="display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 14px; background: #FFFFFF; border: 1px solid #E1E7E9">
+      <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 700">Enviar de forma anônima</span><span style="font-size: 12px; color: #4E6166">Seu nome não será mostrado ao responsável pela obra</span></span>
+      <input class="sw" type="checkbox">
+    </label>
+  </div>
+  <div style="padding: 14px 20px 30px; background: #FFFFFF; border-top: 1px solid #E1E7E9">
+    <a href="Foto.dc.html" style="display: flex; align-items: center; justify-content: center; height: 54px; border-radius: 14px; background: #0D5E6B; color: #FFFFFF; font-size: 16px; font-weight: 700; text-decoration: none">Próximo</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
