@@ -41,27 +41,71 @@ Navegador (celular / PC) → App web (React + Vite, :5173) → API (Node + Expre
 
 ## Como rodar
 
+São **3 peças** que precisam estar no ar ao mesmo tempo, cada uma no seu terminal:
+
+| # | Peça | Onde roda | Porta |
+|---|---|---|---|
+| 1 | Banco PostgreSQL | Docker | 5432 |
+| 2 | API | Node (`api/`) | 3001 |
+| 3 | App web | Node (`app/`) | 5173 |
+
+Suba **nessa ordem** (a API precisa do banco; o app precisa da API).
+
+### 1. Banco de dados (Docker)
+
+Na **raiz do repositório**:
+
 ```bash
-# 1. Banco de dados (PostgreSQL em Docker; cria o schema e os dados iniciais)
 docker compose up -d
+```
 
-# 2. API (porta 3001)
+O que isso faz: baixa a imagem `postgres:16-alpine` (só na primeira vez), cria o container
+`ouvidoria-db` e, **na primeira criação**, executa `db/init.sql` (tabelas, view, sequence do protocolo)
+e `db/seed.sql` (categorias, status, 1 atendente, 1 moradora e 1 obra de exemplo).
+Nenhuma reclamação é criada: elas nascem pela aplicação. Usuário/senha/banco: `ouvidoria` (apenas para uso local).
+
+Comandos úteis:
+
+| Comando | Efeito |
+|---|---|
+| `docker compose ps` | ver se o container está de pé |
+| `docker compose logs db` | ver o log do banco |
+| `docker compose stop` | para o banco, **mantendo** os dados |
+| `docker compose up -d` | sobe de novo (dados mantidos) |
+| `docker compose down -v` | apaga o container **e os dados**; o próximo `up -d` recria tudo limpo |
+
+> **Windows com Docker dentro do WSL** (caso da dupla): o `docker` não está no PowerShell. Use
+> ```powershell
+> wsl -d Ubuntu -- bash -lc "cd '/mnt/c/CAMINHO/DO/REPO' && docker compose up -d"
+> ```
+> e deixe **outro terminal aberto** com `wsl -d Ubuntu -- sleep infinity`. Sem isso o WSL desliga
+> sozinho quando ocioso e **derruba o banco** — a API passa a responder "Erro interno" e o login falha.
+
+### 2. API (porta 3001)
+
+Em outro terminal:
+
+```bash
 cd api
-cp .env.example .env
-npm install
-npm run dev
-
-# 3. Web (porta 5173) — em outro terminal
-cd app
-npm install
+cp .env.example .env      # só na primeira vez (Windows PowerShell: copy .env.example .env)
+npm install               # só na primeira vez
 npm run dev
 ```
 
-> **Docker no WSL (Windows):** rode `wsl -d Ubuntu -- docker compose up -d` na pasta do projeto
-> (o WSL desliga sozinho quando ocioso e derruba o container; mantenha um terminal com
-> `wsl -d Ubuntu -- sleep infinity` aberto). Para recomeçar o banco do zero: `docker compose down -v`.
+Deve aparecer `API ouvidoria em http://localhost:3001`. Confira em http://localhost:3001/api/health
+→ `{"ok":true}`. (Se der erro 500, o banco não está no ar.)
 
-Acesse:
+### 3. App web (porta 5173)
+
+Em outro terminal:
+
+```bash
+cd app
+npm install               # só na primeira vez
+npm run dev
+```
+
+### 4. Abrir
 
 | URL | O que é |
 |---|---|
@@ -69,21 +113,48 @@ Acesse:
 | http://localhost:5173/#/admin | Painel do atendente (fila, mudar status, verificar integridade) |
 
 **No celular:** com PC e celular na mesma rede Wi-Fi, abra `http://IP-DO-PC:5173/#/welcome`
-(o Vite já escuta na rede com `host: true`; libere a porta 5173 no firewall se necessário).
+(`ipconfig` mostra o IPv4; libere a porta 5173 no firewall se necessário).
 
-**Fluxo de demonstração:** em `/welcome` → Entrar (nome + e-mail) → Nova reclamação (5 passos) →
-anote o protocolo → abra `/admin`, altere o status e responda → volte aos Detalhes no app e veja a timeline.
+### Fluxo de demonstração
+
+1. `/welcome` → **Entrar** (qualquer nome + e-mail; não há senha real).
+2. **Nova reclamação** → 5 passos → **Enviar** → anote o protocolo (`2026-0001`).
+3. Em `/admin`, selecione a reclamação, mude o status, escreva a resposta e **Salvar e notificar**.
+4. No app, abra **Acompanhar** e veja o novo evento na timeline.
+5. No `/admin`, **Verificar integridade** confirma a cadeia de hash do histórico.
+
+### Parar tudo
+
+`Ctrl+C` nos terminais da API e do app; `docker compose stop` para o banco.
+
+### Zerar os dados antes de uma demonstração
+
+```bash
+docker compose down -v && docker compose up -d
+```
+
+(no WSL, use o prefixo `wsl -d Ubuntu -- bash -lc "cd ... && ..."` mostrado acima). O protocolo volta a `2026-0001`.
+
+### Problemas comuns
+
+| Sintoma | Causa provável |
+|---|---|
+| Login/cadastro dá "confira se a API está no ar" | API ou banco fora do ar — teste `/api/health` |
+| `/api/health` dá "Erro interno" | banco parado (`docker compose up -d`; no WSL, ver `sleep infinity`) |
+| Tela com "Mapa de telas" e barra lateral | você abriu o protótipo antigo (`web/`), não o `app/` |
+| `EADDRINUSE` / porta ocupada | outro processo usando 3001 ou 5173 |
 
 ## Testes
 
 Testes de integração da API (T01 protocolos únicos, T02 validação sem gravar nada,
-T03 integridade do histórico por hash). Exigem banco e API no ar:
+T03 integridade do histórico por hash). Exigem **banco e API no ar**:
 
 ```bash
 cd api
 npm test
 ```
 
+Eles criam reclamações de teste no banco; para voltar ao estado limpo use o `down -v` acima.
 Evidências em `docs/evidencias/`.
 
 ## Build de produção do front
