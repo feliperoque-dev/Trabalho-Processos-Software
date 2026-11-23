@@ -1,0 +1,18 @@
+
+> ouvidoria-api@1.0.0 test
+> node --env-file=.env --test test/*.test.js
+
+T01 protocolos: 2026-0002 2026-0003
+✔ T01 — dois registros válidos geram protocolos distintos AAAA-NNNN (75.3988ms)
+T02 antes: {"reclamacao":3,"midia":0,"log_historico":4} depois: {"reclamacao":3,"midia":0,"log_historico":4}
+✔ T02 — entrada inválida retorna 400 e não grava nada (38.6582ms)
+T03 antes: {"ok":true} depois: {"ok":false,"primeiroEventoInvalido":6} evento alterado: 6
+✔ T03 — cadeia de hash detecta alteração direta no banco (38.287ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 267.709
