@@ -1,0 +1,14 @@
+## health
+{"ok":true}
+## caminho feliz (201)
+{"protocolo":"2026-0001","id":1} HTTP 201
+## erro (400)
+{"erros":[{"campo":"categoria","mensagem":"Categoria inexistente ou inativa"},{"campo":"descricao","mensagem":"Descrição deve ter entre 10 e 500 caracteres"}]} HTTP 400
+## detalhe
+{"id_reclamacao":1,"protocolo":"2026-0001","id_usuario":2,"usuario_nome":"Maria Moradora","id_categoria":"ruido","categoria_nome":"Ruído","id_obra":1,"tipo":"obra","descricao":"Britadeira ligada desde as 22h30","ocorrido_em":null,"frequencia":"primeira","anonima":false,"endereco":"Rua das Flores, 123","latitude":null,"longitude":null,"referencia":null,"prioridade":"Média","criada_em":"2026-11-23T20:09:37.900Z","id_status":"pendente","status_nome":"Pendente","atualizada_em":"2026-11-23T20:09:37.945Z","midias":[],"timeline":[{"id_evento":1,"id_status":"pendente","status_nome":"Pendente","descricao_evento":"Reclamação registrada","resposta_cidadao":null,"ocorrido_em":"2026-11-23T20:09:37.945Z","autor":"Maria Moradora"}]}
+## admin: muda status
+{"ok":true}
+## integridade
+{"ok":true}
+## indicadores
+{"novas_24h":1,"em_analise":1,"atrasadas":0,"tempo_medio_horas":null}
