@@ -1,11 +1,24 @@
 import { useParams } from 'react-router-dom';
 import { Button, Footer, Screen, StatusBadge, TopBar, notify } from '../components/ui';
 import { Icon } from '../components/Icon';
-import { categoryById, findComplaint, typeLabel } from '../data/mock';
+import { categoryById, typeLabel } from '../data/mock';
+import { buscarReclamacao } from '../data/api';
+import { useAsync } from '../data/useAsync';
 
 export default function Details() {
   const { id } = useParams();
-  const c = findComplaint(id);
+  const { data: c, loading, erro } = useAsync(() => buscarReclamacao(id ?? ''), [id]);
+
+  if (!c) {
+    return (
+      <Screen>
+        <TopBar tone="bar" title="Reclamação" back="/complaints" />
+        <div className="screen-body pad-20">
+          <div className="empty">{loading ? 'Carregando…' : erro ?? 'Reclamação não encontrada.'}</div>
+        </div>
+      </Screen>
+    );
+  }
 
   return (
     <Screen>

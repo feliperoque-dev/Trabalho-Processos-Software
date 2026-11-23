@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, type ChangeEvent } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ApiError, criarReclamacao, type Erro } from '../data/api';
 import { Button, CategoryCard, Chip, Footer, Screen, SectionCard, StepHeader, SwitchRow, TextField, TopBar, notify } from '../components/ui';
 import { Icon, PlayIcon } from '../components/Icon';
 import { categories, categoryById, frequencyLabel, typeLabel, type ComplaintType, type Frequency } from '../data/mock';
@@ -102,8 +103,8 @@ export function DetailsStep() {
           <div className="caption right">{draft.description.length}/500</div>
         </div>
         <div className="grid-2">
-          <TextField label="Data" value={draft.date} onChange={(e) => update({ date: e.target.value })} className="input-sm" />
-          <TextField label="Horário" value={draft.time} onChange={(e) => update({ time: e.target.value })} className="input-sm" />
+          <TextField label="Data" type="date" value={draft.date} onChange={(e) => update({ date: e.target.value })} className="input-sm" />
+          <TextField label="Horário" type="time" value={draft.time} onChange={(e) => update({ time: e.target.value })} className="input-sm" />
         </div>
         <fieldset className="fieldset">
           <legend>Com que frequência acontece?</legend>
@@ -141,26 +142,19 @@ export function DetailsStep() {
 
 /* ---------- 08 · Passo 3: Fotos e vídeos ---------- */
 
-const allMedia = [
-  { id: 'foto', label: '22:31 · foto', kind: 'photo' },
-  { id: 'video', label: '0:14 · vídeo', kind: 'video' },
-  { id: 'db', label: 'medidor', kind: 'meter' },
-] as const;
-
+// Versão mínima: só os metadados (tipo e nome do arquivo) vão para a API; o arquivo em si não é enviado.
 export function MediaStep() {
-  const { update } = useDraft();
-  const [media, setMedia] = useState<string[]>(allMedia.map((m) => m.id));
-  const remove = (id: string) => {
-    const next = media.filter((m) => m !== id);
-    setMedia(next);
-    update({ media: next.length });
-  };
-  const add = () => {
-    const missing = allMedia.find((m) => !media.includes(m.id));
-    if (!missing) return notify('Seleção de arquivos: próxima etapa.');
-    const next = [...media, missing.id];
-    setMedia(next);
-    update({ media: next.length });
+  const { draft, update } = useDraft();
+  const media = draft.media;
+  const remove = (i: number) => update({ media: media.filter((_, k) => k !== i) });
+  const onFiles = (e: ChangeEvent<HTMLInputElement>) => {
+    const novos = Array.from(e.target.files ?? []).map((f) => ({
+      tipo: f.type.startsWith('video') ? ('video' as const) : ('foto' as const),
+      uri: f.name,
+    }));
+    if (media.length + novos.length > 5) notify('Máximo de 5 arquivos.');
+    update({ media: [...media, ...novos].slice(0, 5) });
+    e.target.value = '';
   };
 
   return (
@@ -172,11 +166,16 @@ export function MediaStep() {
           <p className="muted text-14 lh">Fotos e vídeos aceleram a fiscalização. Até 5 arquivos, 30 s por vídeo.</p>
         </div>
         <div className="grid-3">
-          {(['camera', 'video', 'gallery'] as const).map((k) => (
-            <button key={k} type="button" className="media-source" onClick={add}>
-              <Icon name={k} size={22} />
-              {{ camera: 'Câmera', video: 'Vídeo', gallery: 'Galeria' }[k]}
-            </button>
+          {([
+            { k: 'camera', accept: 'image/*', capture: 'environment', label: 'Câmera' },
+            { k: 'video', accept: 'video/*', capture: 'environment', label: 'Vídeo' },
+            { k: 'gallery', accept: 'image/*,video/*', capture: undefined, label: 'Galeria' },
+          ] as const).map((s) => (
+            <label key={s.k} className="media-source" style={{ cursor: 'pointer' }}>
+              <Icon name={s.k} size={22} />
+              {s.label}
+              <input type="file" accept={s.accept} capture={s.capture} multiple={s.k === 'gallery'} onChange={onFiles} className="sr-only" />
+            </label>
           ))}
         </div>
         <div className="row-between baseline">
@@ -184,8 +183,9 @@ export function MediaStep() {
           <span className="muted text-13">{media.length} de 5</span>
         </div>
         <div className="grid-3">
-          {allMedia
-            .filter((m) => media.includes(m.id))
+          {media.length === 0 && <div className="muted text-13">Nenhum arquivo anexado (opcional).</div>}
+          {media
+            .map((x, i) => ({ id: String(i), i, kind: x.tipo === 'video' ? 'video' : 'photo', label: x.uri }))
             .map((m) => (
               <div key={m.id} className={`media-thumb media-${m.kind}`}>
                 {m.kind === 'photo' && (
@@ -200,15 +200,8 @@ export function MediaStep() {
                     <div className="play-btn"><PlayIcon /></div>
                   </div>
                 )}
-                {m.kind === 'meter' ? (
-                  <div className="meter">
-                    <div className="meter-value">92 dB</div>
-                    <div className="meter-label">medidor</div>
-                  </div>
-                ) : (
-                  <span className="media-tag">{m.label}</span>
-                )}
-                <button type="button" className="media-remove" aria-label={`Remover ${m.label}`} onClick={() => remove(m.id)}>
+                <span className="media-tag">{m.label.slice(0, 14)}</span>
+                <button type="button" className="media-remove" aria-label={`Remover ${m.label}`} onClick={() => remove(m.i)}>
                   <Icon name="close" size={14} stroke={2.6} />
                 </button>
               </div>
@@ -273,7 +266,20 @@ export function LocationStep() {
           <label htmlFor="lc-busca" className="sr-only">Buscar endereço</label>
           <input id="lc-busca" type="text" placeholder="Buscar endereço ou ponto de referência" />
         </div>
-        <button type="button" className="map-locate" aria-label="Usar minha localização atual" onClick={() => notify('GPS: próxima etapa.')}>
+        <button
+          type="button"
+          className="map-locate"
+          aria-label="Usar minha localização atual"
+          onClick={() =>
+            navigator.geolocation?.getCurrentPosition(
+              (p) => {
+                update({ latitude: p.coords.latitude, longitude: p.coords.longitude });
+                notify('Coordenadas registradas.');
+              },
+              () => notify('Não foi possível obter a localização.'),
+            ) ?? notify('GPS indisponível neste navegador.')
+          }
+        >
           <Icon name="target" size={22} />
         </button>
       </div>
@@ -283,10 +289,10 @@ export function LocationStep() {
             <Icon name="pin" />
           </div>
           <div className="grow">
-            <div className="text-15 strong">Rua das Flores, 123</div>
-            <div className="muted text-13" style={{ marginTop: 2 }}>Centro · CEP 00000-000</div>
+            <label htmlFor="lc-end" className="text-13 muted">Endereço da ocorrência</label>
+            <input id="lc-end" className="input input-sm" placeholder="Rua, número, bairro" value={draft.address} onChange={(e) => update({ address: e.target.value })} />
+            {draft.latitude != null && <div className="caption">GPS: {draft.latitude.toFixed(5)}, {draft.longitude?.toFixed(5)}</div>}
           </div>
-          <button type="button" className="link-strong" onClick={() => notify('Alterar endereço: próxima etapa.')}>Alterar</button>
         </div>
         <TextField label="Ponto de referência" optional className="input-sm" value={draft.reference} onChange={(e) => update({ reference: e.target.value })} />
         <p className="caption lh">Arraste o mapa para ajustar o pino exatamente sobre a obra.</p>
@@ -300,8 +306,37 @@ export function LocationStep() {
 
 /* ---------- 10 · Passo 5: Revisão ---------- */
 
+const campoPasso: Record<string, string> = {
+  categoria: '/complaint/new/category', tipo: '/complaint/new',
+  descricao: '/complaint/new/details', frequencia: '/complaint/new/details',
+  endereco: '/complaint/new/location', midias: '/complaint/new/media',
+};
+
 export function ReviewStep() {
   const { draft } = useDraft();
+  const nav = useNavigate();
+  const [enviando, setEnviando] = useState(false);
+  const [erros, setErros] = useState<Erro[]>([]);
+
+  const enviar = async () => {
+    setEnviando(true);
+    setErros([]);
+    try {
+      const r = await criarReclamacao({
+        categoria: draft.category, tipo: draft.type, descricao: draft.description, endereco: draft.address,
+        ocorrido_em: draft.date ? new Date(`${draft.date}T${draft.time || '00:00'}`).toISOString() : null,
+        frequencia: draft.frequency, anonima: draft.anonymous, construtora: draft.contractor,
+        referencia: draft.reference, latitude: draft.latitude, longitude: draft.longitude, midias: draft.media,
+      });
+      nav('/complaint/success', { state: { protocolo: r.protocolo } });
+    } catch (e) {
+      const lista = e instanceof ApiError && e.erros.length ? e.erros : [{ campo: '', mensagem: 'Não foi possível enviar. Confira se a API está no ar e se você entrou na conta.' }];
+      setErros(lista);
+    } finally {
+      setEnviando(false);
+    }
+  };
+
   return (
     <Screen>
       <StepHeader step={5} back="/complaint/new/location" />
@@ -315,20 +350,16 @@ export function ReviewStep() {
         <SectionCard label="Detalhes" editTo="/complaint/new/details">
           <div className="text-14 lh">{draft.description || <span className="muted">Sem descrição</span>}</div>
           <div className="chips wrap" style={{ marginTop: 2 }}>
-            <span className="tag">{draft.date} · {draft.time}</span>
+            {draft.date && <span className="tag">{draft.date.split('-').reverse().join('/')} {draft.time}</span>}
             <span className="tag">{frequencyLabel[draft.frequency]}</span>
             <span className="tag">{draft.anonymous ? 'Anônimo' : 'Identificado'}</span>
           </div>
         </SectionCard>
-        <SectionCard label={`Evidências (${draft.media})`} editTo="/complaint/new/media">
-          <div className="row gap-8">
-            <div className="thumb thumb-64 thumb-dark" />
-            <div className="thumb thumb-64 thumb-mid flex-center white"><PlayIcon /></div>
-            <div className="thumb thumb-64 thumb-light flex-center meter-mini">92 dB</div>
-          </div>
+        <SectionCard label={`Evidências (${draft.media.length})`} editTo="/complaint/new/media">
+          <div className="text-13 muted">{draft.media.length ? draft.media.map((m) => m.uri).join(', ') : 'Nenhum arquivo anexado'}</div>
         </SectionCard>
         <SectionCard label="Localização" editTo="/complaint/new/location">
-          <div className="text-15 strong">Rua das Flores, 123 — Centro</div>
+          <div className="text-15 strong">{draft.address || <span className="muted">Endereço não informado</span>}</div>
           {draft.reference && <div className="muted text-13">{draft.reference}</div>}
         </SectionCard>
         <label className="check-row">
@@ -337,8 +368,20 @@ export function ReviewStep() {
         </label>
       </div>
       <Footer>
-        <Button to="/complaint/success">
-          Enviar reclamação
+        {erros.length > 0 && (
+          <div className="alert-danger" style={{ marginBottom: 8 }}>
+            <span>
+              {erros.map((e) => (
+                <div key={e.campo + e.mensagem}>
+                  {e.mensagem}
+                  {campoPasso[e.campo] && <> — <Link to={campoPasso[e.campo]} className="link-strong inline">corrigir</Link></>}
+                </div>
+              ))}
+            </span>
+          </div>
+        )}
+        <Button onClick={enviando ? undefined : enviar} className={enviando ? 'disabled' : ''}>
+          {enviando ? 'Enviando…' : 'Enviar reclamação'}
           <Icon name="send" size={18} stroke={2.2} />
         </Button>
       </Footer>
@@ -350,7 +393,10 @@ export function ReviewStep() {
 
 export function Success() {
   const [copied, setCopied] = useState(false);
-  const protocol = '#2026-0852';
+  const { state } = useLocation();
+  const { reset } = useDraft();
+  const numero: string = state?.protocolo ?? '';
+  const protocol = numero ? `#${numero}` : '—';
   const copy = () => {
     navigator.clipboard?.writeText(protocol).catch(() => {});
     setCopied(true);
@@ -384,8 +430,8 @@ export function Success() {
           <div><Icon name="shieldPlain" size={18} color="#0D5E6B" /><span>Seus dados não são compartilhados com a construtora</span></div>
         </div>
         <div className="spacer" />
-        <Button to="/complaint/2026-0852">Acompanhar reclamação</Button>
-        <Link to="/home" className="btn btn-ghost btn-48" style={{ marginTop: -8 }}>Voltar ao início</Link>
+        <Button to={numero ? `/complaint/${numero}` : '/complaints'} onClick={reset}>Acompanhar reclamação</Button>
+        <Link to="/home" onClick={reset} className="btn btn-ghost btn-48" style={{ marginTop: -8 }}>Voltar ao início</Link>
       </div>
     </Screen>
   );
