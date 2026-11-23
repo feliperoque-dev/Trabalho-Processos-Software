@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { BottomTabBar, Chip, ComplaintCard, Screen, SearchField } from '../components/ui';
-import type { Complaint } from '../data/mock';
-import { minhasReclamacoes } from '../data/api';
-import { useAsync } from '../data/useAsync';
+import { myComplaints, type Complaint } from '../data/mock';
 
 const filters = [
   { id: 'todas', label: 'Todas', match: () => true },
@@ -14,8 +12,6 @@ const filters = [
 export default function MyComplaints() {
   const [filter, setFilter] = useState('todas');
   const [query, setQuery] = useState('');
-  const { data, loading, erro } = useAsync(minhasReclamacoes, []);
-  const myComplaints = data ?? [];
 
   const q = query.trim().toLowerCase();
   const active = filters.find((f) => f.id === filter)!;
@@ -40,9 +36,7 @@ export default function MyComplaints() {
         {items.map((c) => (
           <ComplaintCard key={c.id} complaint={c} variant="full" />
         ))}
-        {loading && <div className="empty">Carregando…</div>}
-        {erro && <div className="empty">Não foi possível carregar. Confira se a API está no ar.</div>}
-        {!loading && !erro && items.length === 0 && <div className="empty">Nenhuma reclamação encontrada.</div>}
+        {items.length === 0 && <div className="empty">Nenhuma reclamação com este status.</div>}
       </div>
       <BottomTabBar />
     </Screen>

@@ -20,12 +20,13 @@ deploy em nuvem.
 ## Arquitetura
 
 ```
-Navegador (celular / PC) → Web SPA (React + Vite, :5173) → API (Node + Express, :3001) → PostgreSQL 16 (Docker, :5432)
+Navegador (celular / PC) → App web (React + Vite, :5173) → API (Node + Express, :3001) → PostgreSQL 16 (Docker, :5432)
 ```
 
 | Pasta | Conteúdo |
 |---|---|
-| `web/` | Front-end React + TypeScript + Vite |
+| `app/` | Front-end React + TypeScript + Vite integrado à API (app do morador + painel) |
+| `web/` | Protótipo original da Unidade 1 (dados fictícios, com mapa de telas) — não usado na aplicação |
 | `api/` | API Node.js + Express (validação, protocolo, histórico com hash encadeado) |
 | `db/` | `init.sql` (schema = DER da U2) e `seed.sql` (categorias, status, usuários de exemplo) |
 | `docker-compose.yml` | Sobe o PostgreSQL |
@@ -51,7 +52,7 @@ npm install
 npm run dev
 
 # 3. Web (porta 5173) — em outro terminal
-cd web
+cd app
 npm install
 npm run dev
 ```
@@ -66,7 +67,6 @@ Acesse:
 |---|---|
 | http://localhost:5173/#/welcome | App do morador (entrar → nova reclamação → protocolo) |
 | http://localhost:5173/#/admin | Painel do atendente (fila, mudar status, verificar integridade) |
-| http://localhost:5173/ | Mapa de telas do design |
 
 **No celular:** com PC e celular na mesma rede Wi-Fi, abra `http://IP-DO-PC:5173/#/welcome`
 (o Vite já escuta na rede com `host: true`; libere a porta 5173 no firewall se necessário).
@@ -89,5 +89,5 @@ Evidências em `docs/evidencias/`.
 ## Build de produção do front
 
 ```bash
-cd web && npm run build
+cd app && npm run build
 ```
