@@ -1,0 +1,17 @@
+ Network trabalho-processos-software_default Created 
+ Container ouvidoria-db Creating 
+ Container ouvidoria-db Created 
+ Container ouvidoria-db Starting 
+ Container ouvidoria-db Started 
+             List of relations
+ Schema |     Name      | Type  |   Owner   
+--------+---------------+-------+-----------
+ public | categoria     | table | ouvidoria
+ public | log_historico | table | ouvidoria
+ public | midia         | table | ouvidoria
+ public | obra          | table | ouvidoria
+ public | reclamacao    | table | ouvidoria
+ public | status        | table | ouvidoria
+ public | usuario       | table | ouvidoria
+(7 rows)
+
