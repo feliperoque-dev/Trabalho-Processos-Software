@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Chip, SearchField, StatusBadge, notify } from '../components/ui';
 import { Icon, type IconName } from '../components/Icon';
-import type { Status } from '../data/mock';
-import { ATENDENTE_ID, alterarStatus, filaAdmin, indicadores, verificarIntegridade } from '../data/api';
-import { useAsync } from '../data/useAsync';
+import { complaints, type Status } from '../data/mock';
 
 const menu: { label: string; icon: IconName }[] = [
   { label: 'Reclamações', icon: 'clipboard' },
@@ -22,58 +20,27 @@ const filters: { id: 'todas' | Status; label: string }[] = [
   { id: 'resolvida', label: 'Resolvidas' },
 ];
 
+const kpis = [
+  { label: 'Novas (24h)', value: '18' },
+  { label: 'Em análise', value: '42' },
+  { label: 'Atrasadas (> 5 dias)', value: '7', danger: true },
+  { label: 'Tempo médio de resposta', value: '3,2 d' },
+];
+
+const queue = complaints.filter((c) => c.id !== '2026-0790');
+
 export default function Admin() {
   const [filter, setFilter] = useState<'todas' | Status>('todas');
-  const [selectedId, setSelectedId] = useState('');
+  const [selectedId, setSelectedId] = useState('2026-0852');
   const [query, setQuery] = useState('');
-  const [versao, setVersao] = useState(0); // incrementa para recarregar após salvar
-  const [novoStatus, setNovoStatus] = useState<Status | null>(null);
-  const [resposta, setResposta] = useState('');
-  const [salvando, setSalvando] = useState(false);
 
-  const { data: fila, erro, loading } = useAsync(() => filaAdmin(filter, query.trim()), [filter, query, versao]);
-  const { data: ind } = useAsync(indicadores, [versao]);
-  const rows = fila ?? [];
-  const sel = rows.find((c) => c.id === selectedId) ?? rows[0];
-
-  const kpis = [
-    { label: 'Novas (24h)', value: ind ? String(ind.novas_24h) : '—' },
-    { label: 'Em análise', value: ind ? String(ind.em_analise) : '—' },
-    { label: 'Atrasadas (> 5 dias)', value: ind ? String(ind.atrasadas) : '—', danger: true },
-    { label: 'Tempo médio até resolver', value: ind?.tempo_medio_horas != null ? `${ind.tempo_medio_horas} h` : '—' },
-  ];
-
-  const selecionar = (id: string) => {
-    const c = rows.find((r) => r.id === id);
-    setSelectedId(id);
-    if (c) setNovoStatus(null);
-    setResposta('');
-  };
-
-  const salvar = async () => {
-    if (!sel) return;
-    setSalvando(true);
-    try {
-      await alterarStatus(sel.id, novoStatus ?? sel.status, resposta, ATENDENTE_ID);
-      notify('Status atualizado e registrado no histórico.');
-      setResposta('');
-      setVersao((v) => v + 1);
-    } catch {
-      notify('Não foi possível salvar.');
-    } finally {
-      setSalvando(false);
-    }
-  };
-
-  const integridade = async () => {
-    if (!sel) return;
-    try {
-      const r = await verificarIntegridade(sel.id);
-      notify(r.ok ? 'Histórico íntegro: cadeia de hash válida.' : `Histórico ADULTERADO (evento ${r.primeiroEventoInvalido}).`);
-    } catch {
-      notify('Não foi possível verificar.');
-    }
-  };
+  const q = query.trim().toLowerCase();
+  const rows = queue.filter(
+    (c) =>
+      (filter === 'todas' || c.status === filter) &&
+      (!q || [c.protocol, c.title, c.place].some((v) => v.toLowerCase().includes(q))),
+  );
+  const sel = queue.find((c) => c.id === selectedId) ?? queue[0];
 
   return (
     <div className="admin">
@@ -107,7 +74,7 @@ export default function Admin() {
         <div className="admin-head">
           <div className="grow" style={{ flexBasis: 260 }}>
             <h1 className="h1 h1-lg">Reclamações</h1>
-            <div className="muted text-14" style={{ marginTop: 2 }}>Secretaria de Obras · dados em tempo real</div>
+            <div className="muted text-14" style={{ marginTop: 2 }}>Secretaria de Obras · atualizado há 2 min</div>
           </div>
           <SearchField className="admin-search" placeholder="Protocolo, endereço ou construtora" value={query} onChange={setQuery} />
           <button type="button" className="btn btn-primary btn-44" onClick={() => notify('Exportar relatório: próxima etapa.')}>
@@ -121,6 +88,7 @@ export default function Admin() {
             <div key={k.label} className="card kpi">
               <div className="kpi-label">{k.label}</div>
               <div className={`kpi-value ${k.danger ? 'danger' : ''}`}>{k.value}</div>
+              <div className="caption">dado ilustrativo</div>
             </div>
           ))}
         </div>
@@ -148,9 +116,9 @@ export default function Admin() {
                 </thead>
                 <tbody>
                   {rows.map((r) => (
-                    <tr key={r.id} className={r.id === sel?.id ? 'selected' : ''} onClick={() => selecionar(r.id)}>
+                    <tr key={r.id} className={r.id === sel.id ? 'selected' : ''} onClick={() => setSelectedId(r.id)}>
                       <td>
-                        <button type="button" className="table-link" onClick={() => selecionar(r.id)}>
+                        <button type="button" className="table-link" onClick={() => setSelectedId(r.id)}>
                           {r.protocol}
                         </button>
                       </td>
@@ -166,7 +134,7 @@ export default function Admin() {
                   ))}
                   {rows.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="empty">{loading ? 'Carregando…' : erro ? 'Falha ao carregar (API no ar?).' : 'Nenhuma reclamação encontrada.'}</td>
+                      <td colSpan={5} className="empty">Nenhuma reclamação encontrada.</td>
                     </tr>
                   )}
                 </tbody>
@@ -174,7 +142,6 @@ export default function Admin() {
             </div>
           </section>
 
-          {sel && (
           <section className="card card-lg admin-detail" key={sel.id}>
             <div className="row-between">
               <span className="caption-strong text-13">{sel.protocol}</span>
@@ -187,10 +154,11 @@ export default function Admin() {
             <div className="body-14">{sel.description}</div>
             <div className="field field-sm">
               <label htmlFor="ad-status">Alterar status</label>
-              <select id="ad-status" className="select" value={novoStatus ?? sel.status} onChange={(e) => setNovoStatus(e.target.value as Status)}>
+              <select id="ad-status" className="select" defaultValue={sel.status}>
                 <option value="pendente">Pendente</option>
                 <option value="em_analise">Em análise</option>
                 <option value="em_andamento">Em andamento</option>
+                <option value="vistoria">Vistoria agendada</option>
                 <option value="resolvida">Resolvida</option>
                 <option value="improcedente">Improcedente</option>
               </select>
@@ -205,16 +173,12 @@ export default function Admin() {
             </div>
             <div className="field field-sm">
               <label htmlFor="ad-resp">Resposta ao cidadão</label>
-              <textarea id="ad-resp" rows={3} className="input textarea textarea-admin" placeholder="Esta mensagem aparece na tela Detalhes do app" value={resposta} onChange={(e) => setResposta(e.target.value)} />
+              <textarea id="ad-resp" rows={3} className="input textarea textarea-admin" placeholder="Esta mensagem aparece na tela Detalhes do app" defaultValue={sel.cityResponse} />
             </div>
-            <button type="button" className="btn btn-primary btn-46" disabled={salvando} onClick={salvar}>
+            <button type="button" className="btn btn-primary btn-46" onClick={() => notify('Salvar e notificar: próxima etapa (backend).')}>
               Salvar e notificar
             </button>
-            <button type="button" className="btn btn-outline btn-46" onClick={integridade}>
-              Verificar integridade
-            </button>
           </section>
-          )}
         </div>
       </main>
     </div>

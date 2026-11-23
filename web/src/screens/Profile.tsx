@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom';
 import { BottomTabBar, Button, Screen, StatTile, notify } from '../components/ui';
 import { Icon, type IconName } from '../components/Icon';
-import { getSessao, iniciais, setSessao } from '../data/session';
-import { minhasReclamacoes } from '../data/api';
-import { useAsync } from '../data/useAsync';
+import { user } from '../data/mock';
 
 const menu: { label: string; icon: IconName; to?: string }[] = [
   { label: 'Dados pessoais', icon: 'user' },
@@ -14,27 +12,25 @@ const menu: { label: string; icon: IconName; to?: string }[] = [
 ];
 
 export default function Profile() {
-  const sessao = getSessao();
-  const { data } = useAsync(minhasReclamacoes, []);
-  const lista = data ?? [];
   return (
     <Screen>
       <div className="screen-body pad-20 gap-16" style={{ paddingTop: 56 }}>
         <h1 className="h2-xl">Perfil</h1>
         <div className="card card-lg row gap-14">
-          <div className="avatar avatar-lg">{iniciais(sessao)}</div>
+          <div className="avatar avatar-lg">{user.initials}</div>
           <div className="grow min-0">
-            <div className="h4-17">{sessao?.nome ?? 'Visitante'}</div>
-            <div className="muted text-13">{sessao?.email ?? 'Sem sessão'}</div>
+            <div className="h4-17">{user.name}</div>
+            <div className="muted text-13">{user.email}</div>
+            <div className="muted text-13">CPF {user.cpf}</div>
           </div>
           <button type="button" className="icon-btn icon-btn-primary" aria-label="Editar perfil" onClick={() => notify('Edição de perfil: próxima etapa.')}>
             <Icon name="edit" />
           </button>
         </div>
         <div className="grid-3">
-          <StatTile value={lista.length} label="Enviadas" center />
-          <StatTile value={lista.filter((c) => c.status === 'resolvida').length} label="Resolvidas" center />
-          <StatTile value={lista.filter((c) => c.status !== 'resolvida' && c.status !== 'improcedente').length} label="Abertas" center />
+          <StatTile value="9" label="Enviadas" center />
+          <StatTile value="5" label="Resolvidas" center />
+          <StatTile value="4,6" label="Avaliação" center />
         </div>
         <nav className="card card-lg list">
           {menu.map((m) => {
@@ -54,7 +50,7 @@ export default function Profile() {
             );
           })}
         </nav>
-        <Button to="/welcome" variant="danger" className="btn-52" onClick={() => setSessao(null)}>
+        <Button to="/welcome" variant="danger" className="btn-52">
           <Icon name="logout" size={18} />
           Sair da conta
         </Button>
