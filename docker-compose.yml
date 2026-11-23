@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ouvidoria-db
+    environment:
+      POSTGRES_USER: ouvidoria
+      POSTGRES_PASSWORD: ouvidoria # senha de desenvolvimento local, sem valor real
+      POSTGRES_DB: ouvidoria
+    ports: ["5432:5432"]
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - ouvidoria-data:/var/lib/postgresql/data
+volumes:
+  ouvidoria-data:
