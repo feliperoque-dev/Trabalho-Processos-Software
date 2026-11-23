@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="460" viewBox="0 0 1000 460" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8z" fill="#444"/></marker>
+  </defs>
+  <rect width="1000" height="460" fill="#fff"/>
+  <text x="20" y="28" font-size="18" font-weight="bold" fill="#222">C4 nível 1 — Contexto · Ouvidoria de Obras &amp; Vizinhança</text>
+  <g fill="#08427b" stroke="#052e56">
+    <rect x="80" y="70" width="240" height="80" rx="12"/><rect x="680" y="70" width="240" height="80" rx="12"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-size="14">
+    <text x="200" y="105" font-weight="bold">Morador / Vizinho de obra</text><text x="200" y="127" font-size="12">[Pessoa] Registra e acompanha reclamações</text>
+    <text x="800" y="105" font-weight="bold">Atendente da Ouvidoria</text><text x="800" y="127" font-size="12">[Pessoa] Trata a fila e responde</text>
+  </g>
+  <rect x="330" y="270" width="340" height="120" rx="12" fill="#1168bd" stroke="#0b4884"/>
+  <g fill="#fff" text-anchor="middle" font-size="14">
+    <text x="500" y="312" font-weight="bold">Ouvidoria de Obras &amp; Vizinhança</text>
+    <text x="500" y="334" font-size="12">[Sistema de software · SGF Módulo 19]</text>
+    <text x="500" y="356" font-size="12">Registro em 5 passos, protocolo único,</text>
+    <text x="500" y="372" font-size="12">painel de atendimento e histórico verificável</text>
+  </g>
+  <g stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#a)">
+    <path d="M200 150 L200 210 L400 270"/>
+    <path d="M800 150 L800 210 L600 270"/>
+  </g>
+  <g font-size="12" fill="#222">
+    <text x="215" y="215">Registra e consulta por protocolo</text>
+    <text x="620" y="215">Filtra, altera status e responde</text>
+  </g>
+  <text x="20" y="445" font-size="12" fill="#555">Fonte: elaborado pelos autores (2026). Nesta entrega não há sistemas externos (e-mail/SMS e gov.br ficaram fora do escopo).</text>
+</svg>

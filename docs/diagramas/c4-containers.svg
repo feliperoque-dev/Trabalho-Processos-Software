@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0L10 4L0 8z" fill="#444"/></marker>
+  </defs>
+  <rect width="1100" height="620" fill="#fff"/>
+  <text x="20" y="28" font-size="18" font-weight="bold" fill="#222">C4 nível 2 — Containers (implementado) · Ouvidoria de Obras &amp; Vizinhança</text>
+
+  <g fill="#08427b" stroke="#052e56">
+    <rect x="110" y="55" width="220" height="70" rx="12"/><rect x="770" y="55" width="220" height="70" rx="12"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-size="14">
+    <text x="220" y="88" font-weight="bold">Morador / Vizinho</text><text x="220" y="108" font-size="12">[Pessoa · navegador do celular]</text>
+    <text x="880" y="88" font-weight="bold">Atendente da Ouvidoria</text><text x="880" y="108" font-size="12">[Pessoa · navegador do PC]</text>
+  </g>
+
+  <rect x="40" y="170" width="1020" height="420" rx="10" fill="none" stroke="#888" stroke-dasharray="8 5"/>
+  <text x="55" y="192" font-size="13" fill="#555">Limite do sistema — Módulo 19 Ouvidoria e Vizinhança de Obra</text>
+
+  <g fill="#438dd5" stroke="#2e6295">
+    <rect x="320" y="215" width="460" height="110" rx="10"/>
+    <rect x="320" y="440" width="460" height="110" rx="10"/>
+    <rect x="60" y="440" width="190" height="110" rx="10" fill="#2e6295"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-size="14">
+    <text x="550" y="245" font-weight="bold">Web SPA (app/)</text>
+    <text x="550" y="265" font-size="12">[React + TypeScript + Vite · porta 5173]</text>
+    <text x="550" y="288" font-size="12">Rotas do morador (/welcome … /complaint/…)</text>
+    <text x="550" y="306" font-size="12">e painel do atendente (/admin, sem login)</text>
+
+    <text x="550" y="470" font-weight="bold">API da Ouvidoria (api/)</text>
+    <text x="550" y="490" font-size="12">[Node.js + Express · porta 3001]</text>
+    <text x="550" y="513" font-size="12">Valida entrada, gera protocolo, grava reclamação</text>
+    <text x="550" y="531" font-size="12">e histórico com hash SHA-256 encadeado</text>
+
+    <text x="155" y="470" font-weight="bold">PostgreSQL 16</text>
+    <text x="155" y="490" font-size="12">[Docker · porta 5432]</text>
+    <text x="155" y="513" font-size="12">Schema = DER da U2 (3FN),</text>
+    <text x="155" y="531" font-size="12">view do status atual</text>
+  </g>
+
+  <g stroke="#444" stroke-width="1.5" fill="none" marker-end="url(#a)">
+    <path d="M220 125 L220 175 L330 240"/>
+    <path d="M880 125 L880 175 L770 240"/>
+    <path d="M550 325 L550 440"/>
+    <path d="M320 495 L250 495"/>
+  </g>
+  <g font-size="12" fill="#222">
+    <text x="230" y="160">Usa [HTTPS]</text>
+    <text x="790" y="160">Usa [HTTPS]</text>
+    <text x="560" y="385">JSON/HTTP (/api/*, proxy do Vite)</text>
+    <text x="256" y="486">SQL (pg)</text>
+  </g>
+  <text x="20" y="610" font-size="12" fill="#555">Fonte: elaborado pelos autores (2026). Sem autenticação real e sem sistemas externos nesta entrega.</text>
+</svg>
